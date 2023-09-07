@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Tablero
@@ -24,9 +26,9 @@ public class Tablero
 				tablero[fila][columna] = this.random.nextBoolean();		
 			}
 		}
-		if(Solver.hasSolution(tablero) == false){
+		if(Solver.hasSolution(tablero)){
 			System.out.println("NO TIENEN SOLUCION");
-				llenarTablero();
+				//llenarTablero();
 		} else{
 			System.out.println("SI TIENEN SOLUCION");
 		}
@@ -35,19 +37,59 @@ public class Tablero
 	public void restartTablero(){
 		this.llenarTablero();
 	}
+	/*
+	 * metodo para mostrar una ayuda para finalizar el juego
+	 * 
+	public List<String> encontrarSecuenciaGanadora() {
+        List<String> secuencia = new ArrayList<>();
+        encontrarSecuenciaGanadoraDFS(0, 0, secuencia);
+        return secuencia;
+    }
+    private void encontrarSecuenciaGanadoraDFS(int row, int col, List<String> secuencia) {
+        // Caso base: si hemos explorado todas las luces
+        if (row == tablero.length) {
+            if (estaResuelto()) {
+                return; // El juego está ganado
+            }
+        }
 
+        // Realizar un clic en la luz actual
+        cambiarEstado(row, col);
+        secuencia.add("Clic en fila " + (row ) + ", columna " + (col));
+
+        // Moverse a la siguiente luz
+        int nextRow = row;
+        int nextCol = col + 1;
+        if (nextCol == tablero[row].length) {
+            nextRow++;
+            nextCol = 0;
+        }
+
+        // Continuar la búsqueda en profundidad
+        if(col < tablero.length && row < tablero.length)
+        	encontrarSecuenciaGanadoraDFS(row, col++, secuencia);
+
+        // Deshacer el clic en la luz actual (backtracking)
+        cambiarEstadoCelda(row, col);
+        secuencia.remove(secuencia.size() - 1);
+
+        // Continuar la búsqueda sin hacer clic en la luz actual
+      	encontrarSecuenciaGanadoraDFS(row, col, secuencia);
+    }
+    
+    */
 	//verifica si el juego esta resuelto
 	public boolean estaResuelto()
-	{
+	{ 
+		boolean ret = true;
 		for(int fila = 0; fila < tablero.length; fila++)
 	    { 
 	    	for(int columna = 0; columna < tablero[fila].length; columna++)
 	    	{
-	    		if(tablero[fila][columna] == true)
-	    			return false;
+	    		ret = ret && tablero[fila][columna];
 	    	}
 	    }
-	    return true;
+	    return ret;
 	}
 	
 	//cambiar el estado de la celda pasada por parametro(f, c) y sus vecinas
@@ -58,11 +100,24 @@ public class Tablero
 		verificarFilaYcolumna(columna);
 		
 		//modificamos el tablero
+		cambiarEstadoColumna(columna);
+		cambiarEstadoFila(fila);
 		cambiarEstadoCelda(fila, columna);
-		cambiarCeldaArriba(fila, columna);
-		cambiarCeldaAbajo(fila, columna);
-		cambiarCeldaDerecha(fila, columna);
-		cambiarCeldaIzquierda(fila, columna);
+//		cambiarCeldaArriba(fila, columna);
+//		cambiarCeldaAbajo(fila, columna);
+//		cambiarCeldaDerecha(fila, columna);
+//		cambiarCeldaIzquierda(fila, columna);
+	}
+	private void cambiarEstadoFila(int fila) {
+		for (int col = 0; col < tablero[0].length; col++) {
+			tablero[fila][col] = !tablero[fila][col];
+		} 
+		
+	}
+	private void cambiarEstadoColumna(int col) {
+		for (int fila = 0; fila < tablero.length; fila++) {
+			tablero[fila][col] = !tablero[fila][col];
+		}
 	}
 	
 	//cambiar el estado de la celda pasada por parametro
@@ -71,29 +126,29 @@ public class Tablero
 		tablero[fila][columna] = !tablero[fila][columna];
 	}
 	
-	private void cambiarCeldaArriba(int fila, int columna)
-	{	
-		if(fila > 0)
-			cambiarEstadoCelda(fila-1, columna);
-	}
-	
-	private void cambiarCeldaAbajo(int fila, int columna)
-	{
-		if(fila < tablero.length - 1)
-			cambiarEstadoCelda(fila+1, columna);
-	}
-	
-	private void cambiarCeldaDerecha(int fila, int columna)
-	{	
-		if(columna < tablero.length - 1)
-			cambiarEstadoCelda(fila, columna+1);
-	}
-	
-	private void cambiarCeldaIzquierda(int fila, int columna)
-	{	
-		if(columna > 0)
-			cambiarEstadoCelda(fila, columna-1);
-	}
+//	private void cambiarCeldaArriba(int fila, int columna)
+//	{	
+//		if(fila > 0)
+//			cambiarEstadoCelda(fila-1, columna);
+//	}
+//	
+//	private void cambiarCeldaAbajo(int fila, int columna)
+//	{
+//		if(fila < tablero.length - 1)
+//			cambiarEstadoCelda(fila+1, columna);
+//	}
+//	
+//	private void cambiarCeldaDerecha(int fila, int columna)
+//	{	
+//		if(columna < tablero.length - 1)
+//			cambiarEstadoCelda(fila, columna+1);
+//	}
+//	
+//	private void cambiarCeldaIzquierda(int fila, int columna)
+//	{	
+//		if(columna > 0)
+//			cambiarEstadoCelda(fila, columna-1);
+//	}
 
 	private void verificarFilaYcolumna(int i)
 	{
@@ -106,7 +161,7 @@ public class Tablero
 	
 	private void verificarTablero(int tamanio)
 	{
-		if( !(tamanio >= 4) )
+		if( !(tamanio >= 3) )
 			throw new IllegalArgumentException("El tamanio del tablero debe ser >= 4 no, " + tamanio);
 	}
 	
